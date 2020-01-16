@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  node-service:
+    build:
+      context: ./services/node
+      dockerfile: Dockerfile
+    container_name: ms-node-service
+    working_dir: /var/www/node
+    volumes:
+      - ./services/node/:/var/www/node
+    environment:
+      NODE_ENV: development
+    hostname: node-service
+    command: bash -c "npm start"
+
+  nginx:
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile
+    container_name: nginx-server
+    restart: always
+    volumes:
+      - ./services/gateway/conf:/etc/nginx/conf.d
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - node-service
